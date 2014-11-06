@@ -1,0 +1,6 @@
+deployment:
+  production:
+    branch: master
+    commands:
+      - gem build dead_mans_snitch.gemspec
+      - curl -F package=@$(ls dead_mans_snitch*.gem) https://$GEMFURY_TOKEN@push.fury.io/ad2games/
