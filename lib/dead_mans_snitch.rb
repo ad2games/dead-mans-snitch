@@ -26,7 +26,7 @@ class DeadMansSnitch
     finish = Time.now
 
     message = "Took: #{Utils.seconds_to_human(finish - start)}"
-    message = "#{message}, #{result}" if result.is_a? String
+    message = "#{message}, #{result}"[0,255] if result.is_a? String
 
     report snitch_id, message
   end
