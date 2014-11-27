@@ -75,6 +75,15 @@ describe DeadMansSnitch do
       end
 
       specify { expect { subject }.to_not raise_error }
+
+      context 'when block does not return a string' do
+        let(:block) { -> { nil } }
+
+        it 'passes the only the runtime of the block to DMS' do
+          expect(DeadMansSnitch).to receive(:report).with(snitch_id, 'Took: 0h 0m 0s').and_return('http result')
+          expect(subject).to eq('http result')
+        end
+      end
     end
   end
 

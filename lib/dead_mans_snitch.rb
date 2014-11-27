@@ -25,7 +25,10 @@ class DeadMansSnitch
     result = yield
     finish = Time.now
 
-    report snitch_id, "Took: #{Utils.seconds_to_human(finish - start)}, #{result}"
+    message = "Took: #{Utils.seconds_to_human(finish - start)}"
+    message = "#{message}, #{result}" if result.is_a? String
+
+    report snitch_id, message
   end
 
   module Utils
