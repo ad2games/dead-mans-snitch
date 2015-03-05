@@ -8,8 +8,6 @@ Install the gem:
 gem install dead_mans_snitch
 </pre>
 
-
-
 Use the report function:
 
 <pre>
@@ -20,10 +18,18 @@ DeadMansSnitch.report 'your-snitch-id'
 DeadMansSnitch.report 'your-snitch-id', 'optional message'
 </pre>
 
+Or pass a block to report_with_time and DeadManSnitch will be notified once
+the block finished execution.
+
+<pre>
+DeadMansSnitch.report_with_time 'your-snitch-id' do
+  # all the heavy lifting
+end
+</pre>
 
 To build and deploy:
 
 <pre>
-gem build dead_mans_snitch.gemspec 
-gem push dead_mans_snitch-[[version]].gem 
+gem build dead_mans_snitch.gemspec
+gem push dead_mans_snitch-[[version]].gem
 </pre>
