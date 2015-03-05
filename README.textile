@@ -27,6 +27,22 @@ DeadMansSnitch.report_with_time 'your-snitch-id' do
 end
 </pre>
 
+There is also a sidekiq middleware you could use in case you use sidekiq.
+
+<pre>
+require 'dead_mans_snitch/sidekiq' # not required by default
+
+class MyWorker
+  include Sidekiq::Worker
+
+  sidekiq_options dms_id: 'aasdoibeo125bk3bu3ljoi'
+
+  def perform # DMS will be notified when perform finishes
+    ...
+  end
+end
+</pre>
+
 To build and deploy:
 
 <pre>
