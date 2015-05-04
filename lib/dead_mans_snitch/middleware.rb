@@ -12,3 +12,9 @@ class DeadMansSnitch
     end
   end
 end
+
+Sidekiq.configure_server do |config|
+  config.server_middleware do |chain|
+    chain.add DeadMansSnitch::Middleware
+  end
+end
