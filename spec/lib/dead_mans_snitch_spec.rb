@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 require 'dead_mans_snitch'
 
@@ -5,35 +7,36 @@ describe DeadMansSnitch do
   let(:snitch_id) { 'WRNZLBRNFT' }
 
   describe '.report' do
-    subject { described_class.report snitch_id }
+    subject(:report) { described_class.report snitch_id }
 
     context 'when passed a snitch_id' do
       context 'when remote accepts the message' do
         before do
-          stub_request(:post, "https://nosnch.in/#{snitch_id}").
-          to_return(:status => 202, :body => "Got it, thanks!")
+          stub_request(:post, "https://nosnch.in/#{snitch_id}")
+            .to_return(status: 202, body: 'Got it, thanks!')
         end
 
         it 'returns http response' do
-          expect(subject.code).to eq('202')
+          expect(report.code).to eq('202')
         end
       end
 
       context 'when remote returns an error' do
         before do
-          stub_request(:post, "https://nosnch.in/#{snitch_id}").
-          to_return(:status => 400, :body => "Bad Snitch")
+          stub_request(:post, "https://nosnch.in/#{snitch_id}")
+            .to_return(status: 400, body: 'Bad Snitch')
         end
 
         it 'returns http response' do
-          expect(subject.code).to eq('400')
+          expect(report.code).to eq('400')
         end
       end
 
       context 'when Net::HTTP throws an error' do
         it 'swallows the error' do
-          expect_any_instance_of(Net::HTTP).to receive(:request).and_raise(Timeout::Error)
-          expect { subject }.to_not raise_error
+          expect_any_instance_of(Net::HTTP).to receive(:request) # rubocop:disable RSpec/AnyInstance
+            .and_raise(Timeout::Error)
+          expect { report }.not_to raise_error
         end
 
         it { is_expected.to be_falsey }
@@ -56,10 +59,10 @@ describe DeadMansSnitch do
   describe '.report_with_time' do
     let(:block) { nil }
 
-    subject { described_class.report_with_time(snitch_id, &block) }
+    subject(:with_time) { described_class.report_with_time(snitch_id, &block) }
 
     context 'when no block was passed' do
-      specify { expect { subject }.to raise_error(LocalJumpError) }
+      specify { expect { with_time }.to raise_error(LocalJumpError) }
     end
 
     context 'when a block was passed' do
@@ -70,18 +73,20 @@ describe DeadMansSnitch do
       end
 
       it 'passes the result of the block to DMS' do
-        expect(DeadMansSnitch).to receive(:report).with(snitch_id, 'Took: 0h 0m 0s, result message').and_return('http result')
-        expect(subject).to eq('http result')
+        expect(described_class).to receive(:report)
+          .with(snitch_id, 'Took: 0h 0m 0s, result message').and_return('http result')
+        expect(with_time).to eq('http result')
       end
 
-      specify { expect { subject }.to_not raise_error }
+      specify { expect { with_time }.not_to raise_error }
 
       context 'when block does not return a string' do
         let(:block) { -> { nil } }
 
         it 'passes the only the runtime of the block to DMS' do
-          expect(DeadMansSnitch).to receive(:report).with(snitch_id, 'Took: 0h 0m 0s').and_return('http result')
-          expect(subject).to eq('http result')
+          expect(described_class).to receive(:report)
+            .with(snitch_id, 'Took: 0h 0m 0s').and_return('http result')
+          expect(with_time).to eq('http result')
         end
       end
     end
@@ -89,12 +94,12 @@ describe DeadMansSnitch do
 
   describe DeadMansSnitch::Utils do
     describe '.seconds_to_human' do
-      subject { described_class.seconds_to_human(seconds) }
+      subject(:seconds_to_human) { described_class.seconds_to_human(seconds) }
 
       context 'when passed a invalid number of seconds' do
         let(:seconds) { -1000 }
 
-        specify { expect { subject }.to raise_error(ArgumentError) }
+        specify { expect { seconds_to_human }.to raise_error(ArgumentError) }
       end
 
       context 'when passed a positive number' do
